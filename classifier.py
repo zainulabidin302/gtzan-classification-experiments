@@ -117,5 +117,5 @@ model.fit(X_train, y_train,
           verbose=1,
           validation_data=(X_test, y_test))
 score = model.evaluate(X_test, y_test, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+print('Test loss: ', score[0])
+print('Test accuracy: ', score[1])
