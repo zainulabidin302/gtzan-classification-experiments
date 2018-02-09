@@ -1,12 +1,10 @@
 from pydub import AudioSegment as ass
 import os
-ass.converter = "C:\\Users\\Zaighee\\Desktop\\ffmpeg-20171208-4678339-win64-static\\ffmpeg-20171208-4678339-win64-static\\bin\\ffmpeg.exe"
+ass.converter = "C:\\devsda\\chrome-downlaods\\ffmpeg\\ffmpeg\\bin\\ffmpeg.exe"
 def main():
 	export_dir = 'database'
-	import_dir = 'genres'
-
+	import_dir = '/devsda/genres'
 	classes = os.listdir(import_dir)
-
 	for clas in classes:
 		clas_dir = os.path.join(import_dir, clas)
 		songs = os.listdir(clas_dir)

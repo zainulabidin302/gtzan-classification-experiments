@@ -25,8 +25,8 @@ def categoreis(labels):
 		counter += 1
 	return a
 
-dataset = np.load('database.npz.npy')
-dataset = dataset[:12000]
+dataset = np.load('database-112x1-52037.npz.npy')
+dataset = dataset[:]
 
 labels = dataset[:, 1]
 
@@ -45,8 +45,9 @@ print(np.shape(dataset))
 print(np.shape(dataset[0]))
 
 
-img_row = 101
-img_col = 101
+img_row = 112
+img_col = 112
+channels = 1
 
 
 
@@ -63,8 +64,8 @@ X_test = dataset[int(N * train_test_split_percentage):, 0]
 # print(X_train)
 
 
-X_train = np.array([x.reshape(img_row, img_col, 1) for x in X_train])
-X_test = np.array([x.reshape(img_row, img_col, 1) for x in X_test])
+X_train = np.array([x.reshape(img_row, img_col, channels) for x in X_train])
+X_test = np.array([x.reshape(img_row, img_col, channels) for x in X_test])
 
 # X_train = Normalization(X_train)
 # X_test = Normalization(X_test)
@@ -85,37 +86,40 @@ print(y_train)
 print(y_train.shape)
 
 
-y_train = keras.utils.to_categorical(y_train)
-y_test  = keras.utils.to_categorical(y_test)
+y_train = keras.utils.to_categorical(y_train, num_classes=10)
+y_test  = keras.utils.to_categorical(y_test, num_classes=10)
 # y_train = keras.utils.to_categorical(y_train, num_classes=10)
 # y_test  = keras.utils.to_categorical(y_test, num_classes=10)
 
 model = Sequential()
 
-model.add(Conv2D(64, kernel_size=(8, 8),
-                 activation='tanh',
-                  input_shape=(img_row,img_col,1)))
-model.add(Conv2D(16, (4, 4), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-model.add(Flatten())
-model.add(Dense(128, activation='tanh'))
+model.add(Conv2D(64, kernel_size=(3, 3),
+                 activation='relu',
+                  input_shape=(img_row,img_col, channels)))
 model.add(Dropout(0.5))
-model.add(Dense(2, activation='softmax'))
+model.add(MaxPooling2D(pool_size=(4, 4)))
+model.add(Conv2D(32, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.5))
+model.add(Flatten())
+model.add(Dense(64, activation='relu'))
+model.add(Dense(10, activation='softmax'))
 model.summary()
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
-batch_size = 256
+batch_size = 512
 epochs = 10
 print(np.shape(y_train))
 model.fit(X_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
           verbose=1,
-          validation_data=(X_test, y_test))
+          validation_split=0.33)
 score = model.evaluate(X_test, y_test, verbose=0)
 print('Test loss: ', score[0])
 print('Test accuracy: ', score[1])
+import time
+model.save('models/conv-8-custom_database-112x1-52037_{}.hd5'.format(int(time.time())))
