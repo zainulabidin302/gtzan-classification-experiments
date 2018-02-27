@@ -11,7 +11,7 @@ def mapper(x):
     return x
 
 SAMPLE_SIZE = 50
-CHANNELS = 3
+CHANNELS = 1
 
 def main():
     start_time = time.time()
@@ -28,7 +28,7 @@ def main():
         clas_dir = os.path.join(export_dir, clas)
         songs = os.listdir(clas_dir)
         for song in songs:
-            print(song)
+
             number_of_songs += 1
             filename = os.path.join(clas_dir,song)
             samplerates, sample = wav.read(filename)
